@@ -1,0 +1,15 @@
+{
+    "user": [{
+        "userName": "admin",
+        "passWord": "123",
+        "gender": 1,
+        "age": 18,
+        "Isadministrator": true
+    }, {
+        "userName": "xiaobai",
+        "passWord": "123",
+        "gender": 0,
+        "age": 0,
+        "Isadministrator": true
+    }]
+}
