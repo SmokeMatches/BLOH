@@ -18,7 +18,7 @@ export function request(config) {
 export function req1(config) {
     const instance = axios.create({
         baseURL: '/api',
-        timeout: 2000
+        timeout: 5000
     })
     return instance(config)
 }

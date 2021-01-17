@@ -11,6 +11,7 @@ var express = require('express')
 var router = express.Router()
     //2把路由都挂载到router路由容器中
 var conYzm = ''
+    //获取所有用户接口
 router.get('/', function(req, res) {
         user.UserAll((data, err) => {
             if (err) {
@@ -46,20 +47,28 @@ router.get('/yzm', function(req, res) {
     })
     // 注册路由接口
 router.post('/register', (req, res) => {
-    user.UserAll((data, err) => {
+        user.UserAll((data, err) => {
+            if (err) {
+                res.status(500).send('Server Error')
+            } else {
+                var ulist = JSON.parse(data).user
+                user.register(conYzm, ulist, req.body, (dat, err) => {
+                    if (err) {
+                        res.status(500).send("Server Error 500")
+                    } else {
+                        res.end(JSON.stringify(dat))
+                    }
+                })
+            }
+        })
+    })
+    //获取用户头像接口
+router.post('/avator', (req, res) => {
+    user.getAavtor(req.body.userName, (data, err) => {
         if (err) {
-            res.status(500).send('Server Error')
-        } else {
-            var ulist = JSON.parse(data).user
-            user.register(conYzm, ulist, req.body, (dat, err) => {
-                if (err) {
-                    res.status(500).send("Server Error 500")
-                } else {
-                    res.end(JSON.stringify(dat))
-                }
-            })
-        }
+            res.status(500).send('服务器出错了')
+        } else
+            res.send(data)
     })
 })
-
 module.exports = router

@@ -12,6 +12,7 @@ const save = function(User, callback) {
                 var sUser = {}
                 sUser.userName = User.userName
                 sUser.passWord = User.passWord
+                sUser.touxiang = '/img/user.png'
                     //设置默认其他数据
                 sUser.gender = 0
                 sUser.age = 0
@@ -135,4 +136,18 @@ exports.register = (config0, config1, config2, callback) => {
         }
     }
 
+}
+exports.getAavtor = (config, callback) => {
+    this.UserAll((data, err) => {
+        if (err) {
+            return err
+        } else {
+            const UserList = JSON.parse(data)
+            for (let item of UserList.user) {
+                if (config == item.userName) {
+                    callback(item.touxiang)
+                }
+            }
+        }
+    })
 }

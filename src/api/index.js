@@ -12,16 +12,30 @@ export const req1_log = (config) => {
 
 //获取图片验证码
 export const req1_yzm = () => {
-    return req1({
-        url: '/yzm',
-        type: 'get',
-    })
-}
-
+        return req1({
+            url: '/yzm',
+            type: 'get',
+        })
+    }
+    //注册接口函数
 export const req1_reg = (data) => {
+        return req1({
+            url: '/register',
+            method: 'POST',
+            data
+        })
+    }
+    //获取所有用户接口函数
+export const req1_all = () => {
+        return req1({
+            url: '/',
+        })
+    }
+    //获取用户头像接口函数
+export const req1_avator = (data) => {
     return req1({
-        url: '/register',
-        method: 'POST',
+        url: '/avator',
+        method: 'post',
         data
     })
 }
