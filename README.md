@@ -35,7 +35,7 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 [链接](www.baidu.com)
 
-_斜体
+*斜体*
 
 1. 有序列表
 2. 有序列表

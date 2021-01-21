@@ -14,7 +14,7 @@ export function request(config) {
     return instance(config)
 }
 
-//配置请求本地服务器
+//配置用户接口
 export function req1(config) {
     const instance = axios.create({
         baseURL: '/api',
@@ -22,3 +22,9 @@ export function req1(config) {
     })
     return instance(config)
 }
+
+//配置文章接口
+export const req2 = axios.create({
+    baseURL: '/api',
+    timeout: 50000
+})
