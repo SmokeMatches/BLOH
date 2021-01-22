@@ -17,16 +17,17 @@ export const delArticle = (id) => {
 // 添加文章
 
 export const addArticle = (data, draft) => {
-        return req2({
-            url: '/addArticle',
-            method: 'post',
-            params: {
-                draft
-            },
-            data
-        })
-    }
-    // 获取需要修改的文章
+    return req2({
+        url: '/addArticle',
+        method: 'post',
+        params: {
+            draft
+        },
+        data
+    })
+}
+
+// 获取需要修改的文章
 export const getArticleId = (id) => {
     return req2({
         url: `/getarticleId/${id}`,

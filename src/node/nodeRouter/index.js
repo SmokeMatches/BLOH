@@ -1,13 +1,20 @@
-//相当于封装路由
-var fs = require('fs')
+const express = require('express')
+const fs = require('fs')
 const axios = require('axios')
 const url = require('url')
+const multer = require('multer')
 
 const user = require('../nodeFunc/user')
 const article = require('../nodeFunc/article')
-var dbPath = './publicStatic/user.json'
-var express = require('express')
-    //1创建一个路有容器
+const image = require('../nodeFunc/image')
+
+const app = express()
+
+// const objMulter = multer({ dest: '../../upload' }); //用户上传文件存入dest目录下
+// app.use(objMulter.any());
+
+
+//1创建一个路有容器
 var router = express.Router()
     //2把路由都挂载到router路由容器中
 var conYzm = ''
@@ -113,8 +120,51 @@ router.get('/getarticleId/:id', (req, res) => {
     })
     // 提交文章修改
 router.patch('/updateArticle/:id', (req, res) => {
-    article.EditorArticle(req.params.id, req.body, data => {
-        res.send(data)
+        article.EditorArticle(req.params.id, req.body, data => {
+            res.send(data)
+        })
     })
+    // 获取图片素材
+router.get('/getimage', (req, res) => {
+    image.getimage(req.query, (data, err) => {
+        if (data) {
+            res.send(data)
+        } else {
+            res.send(err)
+        }
+    })
+})
+router.post('/uploadImg', multer({
+    //设置文件存储路径
+    dest: '../public/upload' //upload文件如果不存在则会自己创建一个。
+}).single('file'), function(req, res, next) {
+    if (req.file.length === 0) { //判断一下文件是否存在，也可以在前端代码中进行判断。
+        // res.render("error", { message: "上传文件不能为空！" });
+        // return
+        res.send({
+            message: "上传文件不能为空"
+        })
+    } else {
+        let file = req.file;
+        let fileInfo = {};
+        fs.renameSync('../public/upload/' + file.filename, '../public/upload/' + file.originalname); //这里修改文件名字，比较随意。
+        // 获取文件信息
+        fileInfo.mimetype = file.mimetype;
+        fileInfo.originalname = file.originalname;
+        fileInfo.size = file.size;
+        fileInfo.path = file.path;
+        console.log(file);
+        console.log(file.originalname);
+        // 设置响应类型及编码
+        res.set({
+            'content-type': 'application/json; charset=utf-8'
+        });
+        let imglist = {}
+        imglist.collect = []
+        imglist.src = `/upload/${file.originalname}`
+        image.publishImg(imglist, data => {
+            res.send(data)
+        })
+    }
 })
 module.exports = router

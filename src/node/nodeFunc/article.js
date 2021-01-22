@@ -1,7 +1,6 @@
 const fs = require('fs')
 const uuid = require('node-uuid')
 const dbPath = './publicStatic/article.json'
-const dbPathhh = './publicStatic/hah.json'
     // 获取所有文章
 exports.getArticle = (callback) => {
         fs.readFile(dbPath, 'utf8', (err, data) => {
@@ -254,22 +253,23 @@ exports.addArticle = (qy, body, callback) => {
     }
     // 获取指定文章,便于修改
 exports.getArticleId = (id, callback) => {
-    this.getArticle((data, err) => {
-        if (err) {
-            callback(err)
-        } else {
-            const AllArticle = JSON.parse(data).article
-            const thisArticle = AllArticle.find(item => {
-                return id == item.articleId
-            })
-            if (thisArticle) {
-                callback(thisArticle)
+        this.getArticle((data, err) => {
+            if (err) {
+                callback(err)
             } else {
-                callback('用户不存在,请刷新重试')
+                const AllArticle = JSON.parse(data).article
+                const thisArticle = AllArticle.find(item => {
+                    return id == item.articleId
+                })
+                if (thisArticle) {
+                    callback(thisArticle)
+                } else {
+                    callback('用户不存在,请刷新重试')
+                }
             }
-        }
-    })
-}
+        })
+    }
+    // 修改文章、提交
 exports.EditorArticle = (id, config, callback) => {
     this.getArticle((data, err) => {
         if (data) {
