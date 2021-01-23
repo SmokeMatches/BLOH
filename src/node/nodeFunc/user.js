@@ -15,6 +15,7 @@ const save = function(User, callback) {
                 sUser.touxiang = '/img/user.png'
                     //设置默认其他数据
                 sUser.gender = 0
+                sUser.id = users[users.length - 1].id + 1
                 sUser.age = 0
                 sUser.Isadministrator = 0
                     //保存对象数据到数组中
@@ -47,11 +48,13 @@ exports.UserAll = (callback) => {
 exports.login = (name, conYzm, alluser, callback) => {
         var userlist = {
             user: [],
-            pwd: []
+            pwd: [],
+            identify: []
         }
         for (let item of alluser) {
             userlist.user.push(item.userName)
             userlist.pwd.push(item.passWord)
+            userlist.identify.push(item.id)
         }
         var i = userlist.user.indexOf(name.admin)
         if (i != -1) {
@@ -59,7 +62,8 @@ exports.login = (name, conYzm, alluser, callback) => {
                 if (conYzm == name.yzm) {
                     callback({
                         logCode: 1,
-                        message: '登录成功'
+                        message: '登录成功',
+                        id: userlist.identify[i]
                     });
                 } else {
                     callback({

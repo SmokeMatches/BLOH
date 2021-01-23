@@ -167,4 +167,9 @@ router.post('/uploadImg', multer({
         })
     }
 })
+router.patch('/addcollectimg', (req, res) => {
+    image.collectImg(req.body, datt => {
+        res.send(datt)
+    })
+})
 module.exports = router

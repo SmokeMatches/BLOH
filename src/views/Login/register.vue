@@ -98,13 +98,19 @@ export default {
         yzm: this.form.yzm,
       }).then((res) => {
         if (res.data.IsCode) {
-          this.$router.push({
-            name: "main",
-            query: {
-              userName: this.form.userName,
-              passWord: this.form.pwd,
-            },
+          this.$message({
+            message: "恭喜您，注册成功",
+            type: "success",
           });
+          setTimeout(() => {
+            this.$router.push({
+              path: "/login",
+              // query: {
+              //   userName: this.form.userName,
+              //   passWord: this.form.pwd,
+              // },
+            });
+          }, 1000);
         } else {
           alert(res.data.message);
         }

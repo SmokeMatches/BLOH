@@ -63,6 +63,7 @@ export default {
         .then(() => {
           this.$router.push("/login");
           if (window.sessionStorage.getItem("user")) {
+            window.sessionStorage.removeItem("identify");
             window.sessionStorage.removeItem("user");
           }
         })

@@ -117,6 +117,7 @@ export default {
           this.LoginLoading = false;
           if (res.data.logCode) {
             window.sessionStorage.setItem("user", this.form.userName);
+            window.sessionStorage.setItem("identify", res.data.id);
             this.$router.push({
               path: "/home",
             });
@@ -125,7 +126,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
           this.LoginLoading = false;
         });
     },

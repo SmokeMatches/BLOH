@@ -3,6 +3,7 @@
             "userName": "admin",
             "passWord": "123",
             "gender": 1,
+            "id": 1,
             "age": 18,
             "Isadministrator": true,
             "touxiang": "/img/touxiang1.png"
@@ -11,17 +12,10 @@
             "userName": "xiaobai",
             "passWord": "123",
             "gender": 0,
+            "id": 2,
             "age": 0,
             "Isadministrator": true,
             "touxiang": "/img/toux.png"
-        },
-        {
-            "userName": "zhang",
-            "passWord": "123456",
-            "touxiang": "/img/user.png",
-            "gender": 0,
-            "age": 0,
-            "Isadministrator": 0
         }
     ]
 }
