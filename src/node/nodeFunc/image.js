@@ -1,5 +1,5 @@
 const fs = require('fs')
-const { callbackify } = require('util')
+const uuid = require('node-uuid')
 
 var dbPath = './publicStatic/image.json'
 
@@ -54,6 +54,8 @@ exports.getimage = (config, callback) => {
     })
 }
 exports.publishImg = (config, callback) => {
+    // 生成随机id
+    const thisId = uuid.v1()
     var ImageList = {}
     fs.readFile(dbPath, 'utf8', (err, data) => {
         if (err) {
@@ -72,6 +74,7 @@ exports.publishImg = (config, callback) => {
                     message: '不能重复发布素材'
                 })
             } else {
+                config.id = thisId
                 imglist.unshift(config)
                 ImageList.images = imglist
                 fs.writeFile(dbPath, JSON.stringify(ImageList), error => {
@@ -99,36 +102,134 @@ exports.collectImg = (config, callback) => {
         } else {
             const AllImage = JSON.parse(data).images
             var AllList = {
-                images: []
-            }
-            if (config.isCollect) {
-                for (let i = 0; i < AllImage.length; i++) {
-                    const index = AllImage[i].collect.findIndex(item => {
-                        return config.identify == item
-                    })
-                    if (index) {
-                        AllImage[i].collect.splice(index, 1)
-                    }
+                    images: []
                 }
+                // 找到当前点击项的索引
+            const FindId = AllImage.findIndex(item => {
+                return config.ImgId == item.id
+            })
+            if (config.isCollect) {
+                // 找到属于当前账号收藏的索引
+                const index = AllImage[FindId].collect.findIndex(item0 => {
+                    return config.identify == item0
+                })
+                if (index != -1) {
+                    AllImage[FindId].collect.splice(index, 1)
+                    AllList.images = AllImage
+                    fs.writeFile(dbPath, JSON.stringify(AllList), err => {
+                        if (err) {
+                            callback({
+                                code: 0,
+                                message: '删除收藏失败'
+                            })
+                        } else {
+                            callback({
+                                code: 1,
+                                message: '删除收藏成功'
+                            })
+                        }
+                    })
+                } else {
+                    callback({
+                        code: 0,
+                        message: '删除收藏失败'
+                    })
+                }
+            } else {
+                AllImage[FindId].collect.push(config.identify)
                 AllList.images = AllImage
                 fs.writeFile(dbPath, JSON.stringify(AllList), err => {
                     if (err) {
                         callback({
                             code: 0,
-                            message: '删除收藏失败'
+                            message: '添加收藏失败'
                         })
                     } else {
                         callback({
                             code: 1,
-                            message: '删除收藏成功'
+                            message: '添加收藏成功'
                         })
                     }
                 })
-            } else {
-                callback({
-                    code: 1,
-                    message: 'hahah '
+            }
+        }
+    })
+
+}
+exports.delImg = (config, callback) => {
+    fs.readFile(dbPath, 'utf8', (err, data) => {
+        if (err) {
+            callback({
+                code: 0,
+                message: 'ERROR .....'
+            })
+        } else {
+            var AllList = JSON.parse(data).images
+            var RAllList = {
+
+            }
+            if (config.Sel == '1') {
+                const Who = AllList.findIndex(item => {
+                    return config.id == item.id
                 })
+                if (Who != -1) {
+                    const index = AllList[Who].collect.findIndex(item0 => {
+                        return config.identify == item0
+                    })
+                    if (index != -1) {
+                        AllList[Who].collect.splice(index, 1)
+                        RAllList.images = AllList
+                        fs.writeFile(dbPath, JSON.stringify(RAllList), (err) => {
+                            if (err) {
+                                callback({
+                                    code: 0,
+                                    message: "删除收藏失败啦"
+                                })
+                            } else {
+                                callback({
+                                    code: 1,
+                                    message: "删除收藏成功"
+                                })
+                            }
+                        })
+                    } else {
+                        callback({
+                            code: 0,
+                            message: "删除收藏失败了"
+                        })
+                    }
+                } else {
+                    callback({
+                        code: 0,
+                        message: "删除收藏失败"
+                    });
+                }
+            } else {
+                const index = AllList.findIndex(item => {
+                    return config.id == item.id
+                })
+                if (index != -1) {
+                    AllList.splice(index, 1)
+                    RAllList.images = AllList
+                    fs.writeFile(dbPath, JSON.stringify(RAllList), (err) => {
+                        if (err) {
+                            callback({
+                                code: 0,
+                                message: "服务器错误，删除素材失败"
+                            })
+                        } else {
+                            callback({
+                                code: 1,
+                                message: "删除素材成功"
+                            })
+                        }
+                    })
+                } else {
+                    callback({
+                        code: 0,
+                        message: '删除素材失败啦'
+                    })
+                }
             }
         }
     })

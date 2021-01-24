@@ -23,3 +23,10 @@ export const AddcollectImg = (config) => {
         data: config
     })
 }
+export const DelImg = (config => {
+    return req2({
+        url: "/delimage",
+        method: 'delete',
+        data: config
+    })
+})

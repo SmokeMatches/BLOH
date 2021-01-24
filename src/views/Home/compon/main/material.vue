@@ -4,7 +4,7 @@
       <!-- <img src="/img/loginLogo.png" /> -->
       <div slot="header">
         <el-breadcrumb>
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item
             ><a href="/home/materical">素材管理</a></el-breadcrumb-item
           >
@@ -14,7 +14,7 @@
         <el-radio-group
           v-model="radio"
           size="small"
-          @change="gitAC(radio)"
+          @change="gitAC()"
           class="sucai"
         >
           <div>
@@ -46,13 +46,16 @@
                   "
                   circle
                   size="mini"
-                  @click="IsCollect(item.IsCollect)"
+                  @click="IsCollect(item.IsCollect, item.id)"
+                  :loading="loading"
                 ></el-button>
                 <el-button
                   type="danger"
                   icon="el-icon-delete"
                   circle
                   size="mini"
+                  :loading="loading"
+                  @click="delImage(item.id)"
                 ></el-button>
               </div>
             </el-col>
@@ -61,6 +64,7 @@
       </div>
       <el-pagination
         background
+        :page-size="12"
         layout="prev, pager, next"
         :current-page.sync="currentPage"
         :total="imageList.total"
@@ -74,6 +78,7 @@
       width="30%"
       :append-to-body="true"
       center
+      :show-close="false"
     >
       <el-upload
         class="avatar-uploader"
@@ -86,18 +91,16 @@
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
       </el-upload>
 
-      <!-- <span slot="footer" class="dialog-footer">
-        <el-button @click="PublishVisible = false">取 消</el-button>
-        <el-button type="primary" @click="PublishVisible = false"
-          >确 定</el-button
-        >
-      </span> -->
+      <span slot="footer" class="dialog-footer">
+        <!-- <el-button @click="PublishVisible = false">取 消</el-button> -->
+        <el-button type="primary" @click="closeDig">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getimage, AddcollectImg } from "api/image";
+import { getimage, AddcollectImg, DelImg } from "api/image";
 import axios from "axios";
 export default {
   name: "Material",
@@ -107,6 +110,7 @@ export default {
       aaa: true,
       PublishVisible: false,
       imageList: [],
+      loading: false,
       imageUrl: "",
       currentPage: 1,
     };
@@ -115,8 +119,8 @@ export default {
     this.getimg();
   },
   methods: {
-    getimg(id) {
-      if (id == 1) {
+    getimg() {
+      if (this.radio == 1) {
         const uuu = window.sessionStorage.getItem("identify");
         getimage({ collect: uuu, page: this.currentPage }).then((res) => {
           const IsTest = window.sessionStorage.getItem("identify"); //获取当前用户身份
@@ -135,7 +139,6 @@ export default {
         });
       } else {
         getimage({ page: this.currentPage }).then((res) => {
-          console.log(res.data.images);
           const IsTest = window.sessionStorage.getItem("identify"); //获取当前用户身份
           // 查询当前素材是否是收藏的素材
           for (let i = 0; i < res.data.images.length; i++) {
@@ -155,6 +158,10 @@ export default {
     gitAC(id) {
       this.currentPage = 1;
       this.getimg(id);
+    },
+    closeDig() {
+      this.PublishVisible = false;
+      this.getimg();
     },
     publishImg() {
       this.PublishVisible = true;
@@ -184,11 +191,36 @@ export default {
       }
       return isLt2M && format;
     },
-    IsCollect(isCollect) {
+    IsCollect(isCollect, id) {
       // 获取当前用户身份信息
+      this.loading = true;
       const identify = window.sessionStorage.getItem("identify");
-      AddcollectImg({ isCollect, identify }).then((res) => {
-        console.log(res);
+      AddcollectImg({ isCollect, identify, ImgId: id }).then((res) => {
+        alert(res.data.message);
+        this.loading = false;
+        this.getimg();
+      });
+    },
+    delImage(q1) {
+      // 获取当前用户身份信息
+      this.loading = true;
+      const identify = window.sessionStorage.getItem("identify");
+      DelImg({
+        Sel: this.radio,
+        identify,
+        id: q1,
+      }).then((res) => {
+        this.$alert(res.data.message, "友情提示", {
+          confirmButtonText: "确定",
+          callback: (action) => {
+            this.$message({
+              type: "info",
+              action: `action:${action}`,
+            });
+          },
+        });
+        this.loading = false;
+        this.getimg();
       });
     },
   },
