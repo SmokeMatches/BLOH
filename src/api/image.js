@@ -17,12 +17,13 @@ export const uploadImg = () => {
     }
     // 添加收藏
 export const AddcollectImg = (config) => {
-    return req2({
-        url: '/addcollectimg',
-        method: 'patch',
-        data: config
-    })
-}
+        return req2({
+            url: '/addcollectimg',
+            method: 'patch',
+            data: config
+        })
+    }
+    // 删除图片获取删除收藏
 export const DelImg = (config => {
     return req2({
         url: "/delimage",

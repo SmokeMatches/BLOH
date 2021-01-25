@@ -170,12 +170,37 @@ router.post('/uploadImg', multer({
     })
     // 添加收藏或者删除收藏
 router.patch('/addcollectimg', (req, res) => {
-    image.collectImg(req.body, datt => {
-        res.send(datt)
+        image.collectImg(req.body, datt => {
+            res.send(datt)
+        })
     })
-})
+    // 删除素材接口
 router.delete('/delimage', (req, res) => {
-    image.delImg(req.body, data => {
+        image.delImg(req.body, data => {
+            res.send(data)
+        })
+    })
+    // 评论文章接口
+router.get('/commentarticle', (req, res) => {
+        article.GetArticlMes(req.query.Page, data => {
+            res.send(data)
+        })
+    })
+    // 修改文章是否评论权限
+router.patch('/updatearticlequanxian', (req, res) => {
+        article.updateCompermissions(req.body, (data) => {
+            res.send(data)
+        })
+    })
+    // 修改用户信息
+router.get('/getcurrentuser', (req, res) => {
+        user.getCurrentUser(req.query.id, data => {
+            res.send(data)
+        })
+    })
+    // 修改用户信息
+router.patch('/updateuserinfo', (req, res) => {
+    user.UpdateUserInfo(req.body, (data) => {
         res.send(data)
     })
 })

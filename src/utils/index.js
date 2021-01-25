@@ -26,5 +26,5 @@ export function req1(config) {
 //配置文章接口
 export const req2 = axios.create({
     baseURL: '/api',
-    timeout: 50000
+    timeout: 3000
 })

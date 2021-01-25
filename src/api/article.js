@@ -42,3 +42,22 @@ export const updateArticle = (id, data) => {
         data
     })
 }
+
+// 获取评论
+export const getComment = (Page = 1) => {
+    return req2({
+        url: "/commentarticle",
+        params: {
+            Page
+        }
+    })
+}
+
+// 修改评论权限
+export const UpPersimision = (data) => {
+    return req2({
+        url: "/updatearticlequanxian",
+        method: 'patch',
+        data
+    })
+}

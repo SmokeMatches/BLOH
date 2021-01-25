@@ -1,6 +1,5 @@
 import { req1 } from 'utils/index.js'
 
-
 //用户登录接口封装函数
 export const req1_log = (config) => {
     return req1({
@@ -39,3 +38,19 @@ export const req1_avator = (data) => {
         data
     })
 }
+
+// 获取当前登录用户的信息
+export const geCurrentUser = (id) => {
+        return req1({
+            url: '/getcurrentuser',
+            params: id
+        })
+    }
+    // 修改当前用户信息
+export const UpUserINfo = (config => {
+    return req1({
+        url: '/updateuserinfo',
+        method: 'patch',
+        data: config
+    })
+})

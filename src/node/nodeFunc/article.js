@@ -207,6 +207,9 @@ exports.addArticle = (qy, body, callback) => {
         articleList.article.articleId = thisId
         articleList.article.date = now
         articleList.article.user = userName
+        articleList.article.TotalComNum = 0
+        articleList.article.IsCom = false
+        articleList.article.FansComNum = 0
 
         // 判断是存为草稿还是发布
         if (qy.draft == 'true') {
@@ -271,32 +274,113 @@ exports.getArticleId = (id, callback) => {
     }
     // 修改文章、提交
 exports.EditorArticle = (id, config, callback) => {
-    this.getArticle((data, err) => {
-        if (data) {
-            var reArticleList = {}
-            var Dat = JSON.parse(data).article
-            for (let i = 0; i < Dat.length; i++) {
-                if (id == Dat[i].articleId) {
-                    Dat[i].title = config.title
-                    Dat[i].content = config.content
-                    Dat[i].Channel = config.Channel
+        this.getArticle((data, err) => {
+            if (data) {
+                var reArticleList = {}
+                var Dat = JSON.parse(data).article
+                for (let i = 0; i < Dat.length; i++) {
+                    if (id == Dat[i].articleId) {
+                        Dat[i].title = config.title
+                        Dat[i].content = config.content
+                        Dat[i].Channel = config.Channel
+                    }
+                }
+                reArticleList.article = Dat
+                fs.writeFile(dbPath, JSON.stringify(reArticleList), function(err) {
+                    if (err) {
+                        callback({
+                            code: 0,
+                            message: '修改失败'
+                        })
+                    }
+                    callback({
+                        code: 1,
+                        message: '修改成功'
+                    })
+                })
+            } else {
+                callback(err)
+            }
+        })
+    }
+    // 评论页面获取文章
+exports.GetArticlMes = (id, callback) => {
+        const size = 10
+        this.getArticle((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                const dt = JSON.parse(data).article
+                const len = dt.length
+                var TableF = {
+                    total: len
+                }
+                if (len < id * size && len > (id - 1) * size) {
+                    TableF.renderD = dt.slice(size * (id - 1))
+                    callback(TableF)
+                } else if (len > id * size) {
+                    TableF.renderD = dt.slice((id - 1) * size, id * size)
+                    callback(TableF)
+                } else {
+                    TableF.renderD = dt
+                    callback(TableF)
                 }
             }
-            reArticleList.article = Dat
-            fs.writeFile(dbPath, JSON.stringify(reArticleList), function(err) {
-                if (err) {
-                    callback({
-                        code: 0,
-                        message: '修改失败'
+        })
+    }
+    // 修改文章评论权限
+exports.updateCompermissions = (config, callback) => {
+    this.getArticle((data, err) => {
+        if (err) {
+            callback(err)
+        } else {
+            const dt = JSON.parse(data).article
+            var Articl = {
+
+            }
+            const DDD = dt.findIndex(item => {
+                return config.id == item.articleId
+            })
+            if (DDD != -1) {
+                if (config.quan) {
+                    dt[DDD].IsCom = true
+                    Articl.article = dt
+                    fs.writeFile(dbPath, JSON.stringify(Articl), err => {
+                        if (err) {
+                            callback({
+                                code: 0,
+                                message: '修改权限失败，服务器错误'
+                            })
+                        } else {
+                            callback({
+                                code: 1,
+                                message: '修改权限成功'
+                            })
+                        }
+                    })
+                } else {
+                    dt[DDD].IsCom = false
+                    Articl.article = dt
+                    fs.writeFile(dbPath, JSON.stringify(Articl), err => {
+                        if (err) {
+                            callback({
+                                code: 0,
+                                message: '修改权限失败，服务器错误'
+                            })
+                        } else {
+                            callback({
+                                code: 1,
+                                message: '修改权限成功'
+                            })
+                        }
                     })
                 }
+            } else {
                 callback({
-                    code: 1,
-                    message: '修改成功'
+                    code: 0,
+                    message: '服务器内部错误'
                 })
-            })
-        } else {
-            callback(err)
+            }
         }
     })
 }

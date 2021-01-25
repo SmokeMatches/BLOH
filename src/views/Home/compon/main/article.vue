@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { addArticle, updateArticle } from "api/article";
+import { addArticle } from "api/article";
 import {
   ElementTiptap,
   Doc,

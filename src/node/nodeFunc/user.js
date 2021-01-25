@@ -17,7 +17,8 @@ const save = function(User, callback) {
                 sUser.gender = 0
                 sUser.id = users[users.length - 1].id + 1
                 sUser.age = 0
-                sUser.Isadministrator = 0
+                sUser.Isadministrator = false
+                sUser.interest = []
                     //保存对象数据到数组中
                 users.push(sUser)
                 var fileData = JSON.stringify({
@@ -94,63 +95,116 @@ exports.Genyzm = () => {
     }
     // 注册方法
 exports.register = (config0, config1, config2, callback) => {
-    const uPattern = /^[a-zA-Z0-9]{3,16}$/
-        // const pPattern = /^[a-zA-Z0-9]{4,16}$/
-    var userlist = {
-        user: [],
-        pwd: []
+        const uPattern = /^[a-zA-Z0-9]{3,16}$/
+            // const pPattern = /^[a-zA-Z0-9]{4,16}$/
+        var userlist = {
+            user: [],
+            pwd: []
+        }
+        for (let item of config1) {
+            userlist.user.push(item.userName)
+            userlist.pwd.push(item.passWord)
+        }
+        var i = userlist.user.indexOf(config2.userName)
+        if (i != -1) {
+            callback({
+                IsCode: 0,
+                message: '该账号已经注册'
+            })
+        } else {
+            if (uPattern.test(config2.userName) && uPattern.test(config2.passWord)) {
+                if (config2.yzm == config0) {
+                    save(config2, (suc, err) => {
+                        if (err) {
+                            callback({
+                                IsCode: 0,
+                                message: '服务器错误'
+                            })
+                        } else {
+                            callback({
+                                IsCode: 1,
+                                message: '注册成功'
+                            })
+                        }
+                    })
+                } else {
+                    callback({
+                        IsCode: 0,
+                        message: "验证码错误"
+                    })
+                }
+            } else {
+                callback({
+                    IsCode: 0,
+                    message: '注册失败，请检查输入格式'
+                })
+            }
+        }
+
     }
-    for (let item of config1) {
-        userlist.user.push(item.userName)
-        userlist.pwd.push(item.passWord)
-    }
-    var i = userlist.user.indexOf(config2.userName)
-    if (i != -1) {
-        callback({
-            IsCode: 0,
-            message: '该账号已经注册'
+    // 获取头像
+exports.getAavtor = (config, callback) => {
+        this.UserAll((data, err) => {
+            if (err) {
+                return err
+            } else {
+                const UserList = JSON.parse(data)
+                for (let item of UserList.user) {
+                    if (config == item.userName) {
+                        callback(item.touxiang)
+                    }
+                }
+            }
         })
-    } else {
-        if (uPattern.test(config2.userName) && uPattern.test(config2.passWord)) {
-            if (config2.yzm == config0) {
-                save(config2, (suc, err) => {
+    }
+    // 获取当前登录的用户
+exports.getCurrentUser = (id, callback) => {
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                const dt = JSON.parse(data).user
+                const Inde = dt.find(item => {
+                    return parseInt(id) == item.id
+                })
+                if (Inde != -1) {
+                    callback(Inde)
+                } else {
+                    callback()
+                }
+            }
+        })
+    }
+    // 修改用户信息
+exports.UpdateUserInfo = (config, callback) => {
+    this.UserAll((data, err) => {
+        if (err) {
+            callback(err)
+        } else {
+            var UU = {
+
+            }
+            UU.user = JSON.parse(data).user
+            const Ind = UU.user.findIndex(item => {
+                return config.id == item.id
+            })
+            if (Ind != -1) {
+                UU.user[Ind] = config
+                fs.writeFile(dbPath, JSON.stringify(UU), err => {
                     if (err) {
-                        callback({
-                            IsCode: 0,
-                            message: '服务器错误'
-                        })
+                        callback(err)
                     } else {
                         callback({
-                            IsCode: 1,
-                            message: '注册成功'
+                            code: 1,
+                            message: '修改成功'
                         })
                     }
                 })
             } else {
                 callback({
-                    IsCode: 0,
-                    message: "验证码错误"
+                    code: 0,
+                    message: '修改失败'
                 })
-            }
-        } else {
-            callback({
-                IsCode: 0,
-                message: '注册失败，请检查输入格式'
-            })
-        }
-    }
-
-}
-exports.getAavtor = (config, callback) => {
-    this.UserAll((data, err) => {
-        if (err) {
-            return err
-        } else {
-            const UserList = JSON.parse(data)
-            for (let item of UserList.user) {
-                if (config == item.userName) {
-                    callback(item.touxiang)
-                }
             }
         }
     })
