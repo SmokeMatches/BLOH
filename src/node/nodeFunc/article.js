@@ -200,7 +200,7 @@ exports.addArticle = (qy, body, callback) => {
         const userName = body.userName
 
         // 存入对象便于存入文件中
-        articleList.article.cover = body.cover.message ? body.cover.message : []
+        articleList.article.cover = body.cover ? body.cover : []
         articleList.article.title = body.title
         articleList.article.content = body.content
         articleList.article.Channel = body.channel
@@ -280,9 +280,7 @@ exports.EditorArticle = (id, config, callback) => {
                 var Dat = JSON.parse(data).article
                 for (let i = 0; i < Dat.length; i++) {
                     if (id == Dat[i].articleId) {
-                        Dat[i].title = config.title
-                        Dat[i].content = config.content
-                        Dat[i].Channel = config.Channel
+                        Dat[i] = config
                     }
                 }
                 reArticleList.article = Dat

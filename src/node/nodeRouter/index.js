@@ -78,6 +78,74 @@ router.post('/avator', (req, res) => {
                 res.send(data)
         })
     })
+    // 上传头像
+router.post('/uploadAvator', multer({
+        //设置文件存储路径
+        dest: '../public/user' //user文件如果不存在则会自己创建一个。
+    }).single('file'), function(req, res, next) {
+        console.log(123);
+        if (req.file.length === 0) { //判断一下文件是否存在，也可以在前端代码中进行判断。
+            // res.render("error", { message: "上传文件不能为空！" });
+            // return
+            res.send({
+                message: "上传文件不能为空"
+            })
+        } else {
+            let file = req.file;
+            let fileInfo = {};
+            fs.renameSync('../public/user/' + file.filename, '../public/user/' + file.originalname); //这里修改文件名字，比较随意。
+            // 获取文件信息
+            fileInfo.mimetype = file.mimetype;
+            fileInfo.originalname = file.originalname;
+            fileInfo.size = file.size;
+            fileInfo.path = file.path;
+            // 设置响应类型及编码
+            res.set({
+                'content-type': 'application/json; charset=utf-8'
+            });
+            let imglist = { identify: parseInt(req.body.identify) }
+            imglist.src = `/user/${file.originalname}`
+            user.UploadAvator(imglist, data => {
+                res.send(data)
+            })
+        }
+    })
+    // 修改密码
+router.patch('/updatepassword', (req, res) => {
+        user.UpdatePwd(req.body, (data => {
+            res.send(data)
+        }))
+    })
+    // 获取全站用户（除自己）
+router.get('/alluser', (req, res) => {
+        user.GetUser(req.query, data => {
+            res.send(data)
+        })
+    })
+    // 添加关注/取关
+router.patch('/addfocus', (req, res) => {
+        user.addFocus(req.body, data => {
+            res.send(data)
+        })
+    })
+    // 拉黑用户/取黑
+router.patch('/lahei', (req, res) => {
+        user.laHei(req.body, data => {
+            res.send(data)
+        })
+    })
+    // 关注页面取关、拉黑页面关注
+router.patch('/addblur', (req, res) => {
+        user.OnlyBlur(req.body, data => {
+            res.send(data)
+        })
+    })
+    // 关注页面拉黑、拉黑页面取消拉黑
+router.patch('/onlyignore', (req, res) => {
+        user.OnlyWhait(req.body, data => {
+            res.send(data)
+        })
+    })
     //获取文章接口
 router.get('/article', (req, res) => {
         article.getArticle((data, err) => {
@@ -111,6 +179,36 @@ router.post('/addArticle', (req, res) => {
         article.addArticle(req.query, req.body, (data) => {
             res.send(data)
         })
+    })
+    // 添加封面
+router.post('/uploadcover', multer({
+        //设置文件存储路径
+        dest: '../public/cover' //upload文件如果不存在则会自己创建一个。
+    }).single('file'), function(req, res, next) {
+        if (req.file.length === 0) { //判断一下文件是否存在，也可以在前端代码中进行判断。
+            // res.render("error", { message: "上传文件不能为空！" });
+            // return
+            res.send({
+                message: "上传文件不能为空"
+            })
+        } else {
+            let file = req.file;
+            let fileInfo = {};
+            fs.renameSync('../public/cover/' + file.filename, '../public/cover/' + file.originalname); //这里修改文件名字，比较随意。
+            // 获取文件信息
+            fileInfo.mimetype = file.mimetype;
+            fileInfo.originalname = file.originalname;
+            fileInfo.size = file.size;
+            fileInfo.path = file.path;
+            console.log(file);
+            console.log(file.originalname);
+            // 设置响应类型及编码
+            res.set({
+                'content-type': 'application/json; charset=utf-8'
+            });
+            const src = `/cover/${file.originalname}`
+            res.send(src)
+        }
     })
     // 获取需要修改的文章
 router.get('/getarticleId/:id', (req, res) => {

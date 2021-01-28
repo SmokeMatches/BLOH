@@ -24,7 +24,9 @@
               {{ userToken }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>设置</el-dropdown-item>
+              <el-dropdown-item @click.native="toSetting"
+                >设置</el-dropdown-item
+              >
               <el-dropdown-item @click.native="clearSession"
                 >退出</el-dropdown-item
               >
@@ -73,6 +75,9 @@ export default {
             message: "成功退出",
           });
         });
+    },
+    toSetting() {
+      this.$router.push("/home/profile");
     },
   },
   created() {

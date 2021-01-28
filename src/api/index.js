@@ -48,9 +48,57 @@ export const geCurrentUser = (id) => {
     }
     // 修改当前用户信息
 export const UpUserINfo = (config => {
+        return req1({
+            url: '/updateuserinfo',
+            method: 'patch',
+            data: config
+        })
+    })
+    // 修改密码
+export const UpdatePwd = (config) => {
+        return req1({
+            url: '/updatepassword',
+            method: 'patch',
+            data: config
+        })
+    }
+    // 获取所有用户除自己
+export const GEtUsr = (config) => {
+        return req1({
+            url: "/alluser",
+            method: 'get',
+            params: config
+        })
+    }
+    // 添加关注/取关
+export const addFocus = (config) => {
+        return req1({
+            url: '/addfocus',
+            method: 'patch',
+            data: config
+        })
+    }
+    // 拉黑/取黑
+export const laHei = (config) => {
+        return req1({
+            url: '/lahei',
+            method: 'patch',
+            data: config
+        })
+    }
+    // 关注页面取关、拉黑页面关注
+export const addBlur = (config) => {
+        return req1({
+            url: "/addblur",
+            method: 'patch',
+            data: config
+        })
+    }
+    // 关注页面拉黑、拉黑页面取消拉黑
+export const OnlyIngnore = (config) => {
     return req1({
-        url: '/updateuserinfo',
+        url: "/onlyignore",
         method: 'patch',
         data: config
     })
-})
+}

@@ -36,7 +36,11 @@
               v-for="(item, index) in imageList.images"
               :key="index"
               class="itemImg"
-              ><el-image style="height: 100px" :src="item.src" fit="fit">
+              ><el-image
+                style="height: 100px; width: 210px"
+                :src="item.src"
+                fit="fit"
+              >
               </el-image>
               <div class="action">
                 <el-button
@@ -263,7 +267,10 @@ export default {
     justify-content: space-evenly;
     background: #ccc;
     opacity: 0.8;
-    width: 178px;
+    width: 210px;
   }
+}
+.el-col {
+  margin-bottom: 0.2rem;
 }
 </style>

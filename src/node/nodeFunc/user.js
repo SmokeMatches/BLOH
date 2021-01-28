@@ -17,6 +17,9 @@ const save = function(User, callback) {
                 sUser.gender = 0
                 sUser.id = users[users.length - 1].id + 1
                 sUser.age = 0
+                sUser.myFocus = []
+                sUser.focusMe = []
+                sUser.myIgnore = []
                 sUser.Isadministrator = false
                 sUser.interest = []
                     //保存对象数据到数组中
@@ -177,33 +180,503 @@ exports.getCurrentUser = (id, callback) => {
     }
     // 修改用户信息
 exports.UpdateUserInfo = (config, callback) => {
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var UU = {
+
+                }
+                UU.user = JSON.parse(data).user
+                const Ind = UU.user.findIndex(item => {
+                    return config.id == item.id
+                })
+                if (Ind != -1) {
+                    UU.user[Ind] = config
+                    fs.writeFile(dbPath, JSON.stringify(UU), err => {
+                        if (err) {
+                            callback(err)
+                        } else {
+                            callback({
+                                code: 1,
+                                message: '修改成功'
+                            })
+                        }
+                    })
+                } else {
+                    callback({
+                        code: 0,
+                        message: '修改失败'
+                    })
+                }
+            }
+        })
+    }
+    // 上传用户头像
+exports.UploadAvator = (config, callback) => {
+        console.log(config);
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                const User = JSON.parse(data).user
+
+                var UsrList = {}
+                const index = User.findIndex(item => {
+                    return config.identify == item.id
+                })
+                if (index != -1) {
+                    User[index].touxiang = config.src
+                    UsrList.user = User
+                    fs.writeFile(dbPath, JSON.stringify(UsrList), err => {
+                        if (err) {
+                            callback(err)
+                        } else {
+                            callback({
+                                code: 1,
+                                message: '修改头像成功'
+                            })
+                        }
+                    })
+                } else {
+                    callback(err)
+                }
+            }
+        })
+    }
+    // 修改密码
+exports.UpdatePwd = (config, callback) => {
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                const User = JSON.parse(data).user
+                var UserList = {}
+                const index = User.findIndex(item => {
+                    return config.identify == item.id
+                })
+                if (index != -1) {
+                    if (User[index].passWord == config.initalPwd) {
+                        User[index].passWord = config.newPwd
+                        UserList.user = User
+                        fs.writeFile(dbPath, JSON.stringify(UserList), err => {
+                            if (err) {
+                                callback(err)
+                            } else {
+                                callback({
+                                    code: 1,
+                                    message: "密码修改成功"
+                                })
+                            }
+                        })
+                    } else {
+                        callback({
+                            code: 0,
+                            message: '原密码错误'
+                        })
+                    }
+                } else {
+                    callback(err)
+                }
+            }
+        })
+    }
+    // 获取除了自己所有用户
+exports.GetUser = (config, callback) => {
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var USA = JSON.parse(data).user
+                const index = USA.findIndex(item => {
+                    return config.identify == item.id
+                })
+                var DataUser = { user: [] }
+                const Size = 10
+                const ID = parseInt(config.Fans)
+                if (index != -1) {
+                    const myProfile = USA.slice(index, index + 1)
+                    USA.splice(index, 1)
+                    if (ID == 0) {
+                        const len = USA.length
+                        for (let key in USA) {
+                            let gg = myProfile[0].myFocus.includes(USA[key].id)
+                            if (gg) {
+                                USA[key].isFocus = gg
+                            } else {
+                                USA[key].isFocus = false
+                            }
+                        }
+                        for (let key in USA) {
+                            let gg = myProfile[0].myIgnore.includes(USA[key].id)
+                            if (gg) {
+                                USA[key].isIgnore = gg
+                            } else {
+                                USA[key].isIgnore = false
+                            }
+                        }
+                        DataUser.total = len
+                        if (config.page * Size > len && (config.page - 1) * Size <= len) {
+                            DataUser.user = USA.slice((config.page - 1) * Size)
+                            callback(DataUser)
+                        } else if (config.page * Size <= len) {
+                            DataUser.user = USA.slice((config.page - 1) * Size, config.page * Size)
+                            callback(DataUser)
+                        } else {
+                            DataUser.user = USA.slice(0, 9)
+                            callback(DataUser)
+                        }
+                    } else if (ID == 1) {
+                        for (let key in USA) {
+                            const index1 = myProfile[0].myFocus.findIndex(item2 => {
+                                return USA[key].id == item2
+                            })
+                            if (index1 != -1) {
+                                DataUser.user.push(USA[key])
+                            }
+
+                        }
+                        const len = DataUser.user.length
+                        DataUser.total = len
+                        if (config.page * Size > len && (config.page - 1) * Size <= len) {
+                            DataUser.user = DataUser.user.slice((config.page - 1) * Size)
+                            callback(DataUser)
+                        } else if (config.page * Size <= len) {
+                            DataUser.user = DataUser.user.slice((config.page - 1) * Size, config.page * Size)
+                            callback(DataUser)
+                        } else {
+                            DataUser.user = DataUser.user.slice(0, 9)
+                        }
+                    } else if (ID == 2) {
+                        for (let key in USA) {
+                            const index1 = myProfile[0].myIgnore.findIndex(item2 => {
+                                return USA[key].id == item2
+                            })
+                            if (index1 != -1) {
+                                DataUser.user.push(USA[key])
+                            }
+
+                        }
+                        const len = DataUser.user.length
+                        DataUser.total = len
+                        if (config.page * Size > len && (config.page - 1) * Size <= len) {
+                            DataUser.user = DataUser.user.slice((config.page - 1) * Size)
+                            callback(DataUser)
+                        } else if (config.page * Size <= len) {
+                            DataUser.user = DataUser.user.slice((config.page - 1) * Size, config.page * Size)
+                            callback(DataUser)
+                        } else {
+                            DataUser.user = DataUser.user.slice(0, 9)
+                        }
+                    } else {
+                        for (let key in USA) {
+                            const index9 = USA[key].myFocus.findIndex(item8 => {
+                                return config.identify == item8
+                            })
+                            if (index9 != -1) {
+                                DataUser.user.push(USA[key])
+                            }
+                        }
+                        for (let key in DataUser.user) {
+                            let gg = myProfile[0].myFocus.includes(DataUser.user[key].id)
+                            if (gg) {
+                                DataUser.user[key].isFocus = gg
+                            } else {
+                                DataUser.user[key].isFocus = false
+                            }
+                        }
+                        for (let key in DataUser.user) {
+                            let gg = myProfile[0].myIgnore.includes(DataUser.user[key].id)
+                            if (gg) {
+                                DataUser.user[key].isIgnore = gg
+                            } else {
+                                DataUser.user[key].isIgnore = false
+                            }
+                        }
+                        const len = DataUser.user.length
+                        DataUser.total = len
+                        if (config.page * Size > len && (config.page - 1) * Size <= len) {
+                            DataUser.user = DataUser.user.slice((config.page - 1) * Size)
+                            callback(DataUser)
+                        } else if (config.page * Size <= len) {
+                            DataUser.user = DataUser.user.slice((config.page - 1) * Size, config.page * Size)
+                            callback(DataUser)
+                        } else {
+                            DataUser.user = DataUser.user.slice(0, 9)
+                        }
+                    }
+                } else {
+                    callback(err)
+                }
+            }
+        })
+    }
+    // 添加关注/取关
+exports.addFocus = (config, callback) => {
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var USA = JSON.parse(data).user
+                const index = USA.findIndex(item => {
+                    return config.identify == item.id
+                })
+                var DataUser = {}
+                if (index != -1) {
+                    const Ind = USA[index].myIgnore.findIndex(item0 => {
+                        return config.identify1 == item0
+                    })
+                    if (Ind != -1) {
+                        USA[index].myIgnore.splice(Ind, 1)
+                        const sort = USA[index].myFocus.findIndex(item1 => {
+                            return config.identify1 == item1
+                        })
+                        if (sort == -1) {
+                            USA[index].myFocus.push(parseInt(config.identify1))
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 1,
+                                        message: '关注该用户成功'
+                                    })
+                                }
+                            })
+                        } else {
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 0,
+                                        message: '已经关注过该用户'
+                                    })
+                                }
+                            })
+
+                        }
+                    } else {
+                        const sort = USA[index].myFocus.findIndex(item1 => {
+                            return config.identify1 == item1
+                        })
+                        if (sort == -1) {
+                            USA[index].myFocus.push(parseInt(config.identify1))
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 1,
+                                        message: '关注该用户成功'
+                                    })
+                                }
+                            })
+                        } else {
+                            callback({
+                                code: 0,
+                                message: '已经关注过该用户'
+                            })
+                        }
+                    }
+                } else {
+                    callback(err)
+                }
+            }
+        })
+    }
+    // 拉黑/拉白
+exports.laHei = (config, callback) => {
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var USA = JSON.parse(data).user
+                const index = USA.findIndex(item => {
+                    return config.identify == item.id
+                })
+                var DataUser = {}
+                if (index != -1) {
+                    const Ind = USA[index].myFocus.findIndex(item0 => {
+                        return config.identify1 == item0
+                    })
+                    if (Ind != -1) {
+                        USA[index].myFocus.splice(Ind, 1)
+                        const sort = USA[index].myIgnore.findIndex(item1 => {
+                            return config.identify1 = item1
+                        })
+                        if (sort == -1) {
+                            USA[index].myIgnore.push(parseInt(config.identify1))
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 1,
+                                        message: '已将该用户拉黑'
+                                    })
+                                }
+                            })
+                        } else {
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 0,
+                                        message: '当前用户已在你的黑名单中'
+                                    })
+                                }
+                            })
+
+                        }
+                    } else {
+                        const sort = USA[index].myIgnore.findIndex(item1 => {
+                            return config.identify1 = item1
+                        })
+                        if (sort == -1) {
+                            USA[index].myIgnore.push(parseInt(config.identify1))
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 1,
+                                        message: '已将该用户拉黑'
+                                    })
+                                }
+                            })
+                        } else {
+                            callback({
+                                code: 0,
+                                message: '当前用户已在你的黑名单中'
+                            })
+                        }
+                    }
+                } else {
+                    callback(err)
+                }
+            }
+        })
+    }
+    // 只取关
+exports.OnlyBlur = (config, callback) => {
+        console.log(config);
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var USA = JSON.parse(data).user
+                const index = USA.findIndex(item => {
+                    return config.identify == item.id
+                })
+                var DataUser = {}
+                if (index != -1) {
+                    const myProfile = USA.slice(index, index + 1)
+                    const IND = myProfile[0].myFocus.findIndex(item1 => {
+                        return config.identify1 == item1
+                    })
+                    if (IND == -1) {
+                        const Ind = USA[index].myIgnore.findIndex(item0 => {
+                            return config.identify1 == item0
+                        })
+                        if (Ind != -1) {
+                            USA[index].myIgnore.splice(Ind, 1)
+                            USA[index].myFocus.push(parseInt(config.identify1))
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 1,
+                                        message: '关注该用户成功'
+                                    })
+                                }
+                            })
+                        }
+                    } else {
+                        USA[index].myFocus.splice(IND, 1)
+                        DataUser.user = USA
+                        fs.writeFile(dbPath, JSON.stringify(DataUser), err => {
+                            if (err) {
+                                callback(err)
+                            } else {
+                                callback({
+                                    code: 1,
+                                    message: '取关成功'
+                                })
+                            }
+                        })
+                    }
+                } else {
+                    callback({
+                        code: 0,
+                        message: '取关失败'
+                    })
+                }
+            }
+        })
+    }
+    // 只拉黑
+exports.OnlyWhait = (config, callback) => {
     this.UserAll((data, err) => {
         if (err) {
             callback(err)
         } else {
-            var UU = {
-
-            }
-            UU.user = JSON.parse(data).user
-            const Ind = UU.user.findIndex(item => {
-                return config.id == item.id
+            var USA = JSON.parse(data).user
+            const index = USA.findIndex(item => {
+                return config.identify == item.id
             })
-            if (Ind != -1) {
-                UU.user[Ind] = config
-                fs.writeFile(dbPath, JSON.stringify(UU), err => {
-                    if (err) {
-                        callback(err)
-                    } else {
-                        callback({
-                            code: 1,
-                            message: '修改成功'
+            var DataUser = {}
+            if (index != -1) {
+                const myProfile = USA.slice(index, index + 1)
+                const IND = myProfile[0].myFocus.findIndex(item1 => {
+                    return config.identify1 == item1
+                })
+                if (IND == -1) {
+                    const Ind = USA[index].myIgnore.findIndex(item0 => {
+                        return config.identify1 == item0
+                    })
+                    if (Ind != -1) {
+                        USA[index].myIgnore.splice(Ind, 1)
+                        DataUser.user = USA
+                        fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                            if (error) {
+                                callback(error)
+                            } else {
+                                callback({
+                                    code: 1,
+                                    message: '取消拉黑该用户成功'
+                                })
+                            }
                         })
                     }
-                })
+                } else {
+                    USA[index].myFocus.splice(IND, 1)
+                    USA[index].myIgnore.push(parseInt(config.identify1))
+                    DataUser.user = USA
+                    fs.writeFile(dbPath, JSON.stringify(DataUser), err => {
+                        if (err) {
+                            callback(err)
+                        } else {
+                            callback({
+                                code: 1,
+                                message: '取消拉黑此用户成功'
+                            })
+                        }
+                    })
+                }
             } else {
                 callback({
                     code: 0,
-                    message: '修改失败'
+                    message: '取关失败'
                 })
             }
         }

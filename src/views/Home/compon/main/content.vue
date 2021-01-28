@@ -117,16 +117,31 @@
       :modal-append-to-body="false"
     >
       <el-form label-width="80px" :model="formLabelAlign">
-        <el-form-item
-          label="封面"
-          v-for="(item, index) in formLabelAlign.cover"
-          :key="index"
-        >
-          <el-image
-            style="width: 100px; height: 100px"
-            :src="item"
-            fit="fit"
-          ></el-image>
+        <el-form-item label="封面">
+          <el-upload
+            action="http://127.0.0.1:4000/uploadcover"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+          >
+            <el-image
+              v-for="(item, index) in formLabelAlign.cover"
+              :key="index"
+              style="width: 100px; height: 100px; margin: 0.05rem"
+              :src="item"
+              @click="upCover(index)"
+              fit="fit"
+            >
+            </el-image>
+            <i
+              class="el-icon-plus"
+              v-if="
+                formLabelAlign.cover !== undefined &&
+                formLabelAlign.cover.length < 3
+              "
+            ></i>
+          </el-upload>
         </el-form-item>
         <el-form-item label="标题">
           <el-input v-model="formLabelAlign.title"></el-input>
@@ -183,6 +198,8 @@ export default {
   },
   data() {
     return {
+      dialogImageUrl: "",
+      dialogVisible: false,
       form: {
         name: "",
         region: "",
@@ -272,6 +289,21 @@ export default {
         alert(res.data.message);
         this.getatricle(this.CurrentPage);
       });
+    },
+    upCover(id) {
+      this.formLabelAlign.cover.splice(id, 1);
+    },
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+    handleAvatarSuccess(res, file) {
+      const src = `/cover/${file.raw.name}`;
+      console.log(src);
+      this.formLabelAlign.cover.push(src);
     },
   },
 };

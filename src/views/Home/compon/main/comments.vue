@@ -78,19 +78,16 @@ export default {
       UpPersimision({
         quan: e,
         id,
-      })
-        .then((res) => {
-          this.Isdis = false;
-          // alert(res.data.message);
-          this.$message({
-            message: res.data.message,
-            type: res.data.code ? "success" : "error",
-          });
-          this.getArt(this.currenPage);
-        })
-        .catch((err) => {
-          console.log(err);
+      }).then((res) => {
+        this.$message({
+          message: res.data.message,
+          type: res.data.code ? "success" : "error",
         });
+        this.Isdis = false;
+        setTimeout(() => {
+          this.getArt(this.currenPage);
+        }, 1000);
+      });
     },
   },
 };
