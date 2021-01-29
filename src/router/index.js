@@ -21,7 +21,10 @@ const Fans = () =>
     import ('views/Home/compon/main/fans')
 const Profile = () =>
     import ('views/Home/compon/main/profile')
-
+const User = () =>
+    import ('views/Home/compon/main/User')
+const ArticleDetail = () =>
+    import ('views/Home/compon/main/articleDetail')
 const routes = [{
         path: '/',
         redirect: '/login'
@@ -82,6 +85,15 @@ const routes = [{
                 path: 'profile',
                 name: 'profile',
                 component: Profile
+            },
+            {
+                path: 'user',
+                name: 'user',
+                component: User
+            }, {
+                path: 'articledetail',
+                name: 'articledetail',
+                component: ArticleDetail
             }
         ]
     }

@@ -1,6 +1,5 @@
 <template>
   <el-menu
-    default-active="2"
     class="el-menu-vertical-demo"
     background-color="#002033"
     text-color="#fff"
@@ -8,6 +7,9 @@
     :collapse="isCollapse"
     active-text-color="#ffd04b"
   >
+    <div :class="isCollapse ? 'image1' : 'imgHezi'">
+      <img src="~assets/img/tree.png" class="image" alt="" />
+    </div>
     <el-menu-item index="/home">
       <i class="el-icon-s-home"></i>
       <span title="title">首页</span>
@@ -46,6 +48,7 @@ export default {
     return {};
   },
   props: ["is-collapse"],
+  mounted() {},
 };
 </script>
 
@@ -55,5 +58,17 @@ export default {
 }
 .el-menu-item {
   font-size: 0.18rem;
+}
+.imgHezi {
+  display: flex;
+  justify-content: center;
+}
+.image {
+  width: 100px;
+  height: 100px;
+  text-align: center;
+}
+.image1 {
+  display: none;
 }
 </style>

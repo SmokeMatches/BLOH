@@ -1,1 +1,55 @@
-{"user":[{"userName":"admin","passWord":"123","gender":0,"id":1,"age":18,"myFocus":[],"myIgnore":[2],"focusMe":[],"Isadministrator":true,"interest":["看书","拍照"],"touxiang":"/user/color.png"},{"userName":"xiaobai","passWord":"123","gender":0,"id":2,"age":0,"myFocus":[1],"myIgnore":[],"focusMe":[],"interest":[],"Isadministrator":true,"touxiang":"/img/toux.png"}]}
+{
+    "user": [{
+            "userName": "admin",
+            "passWord": "123",
+            "gender": 0,
+            "id": 1,
+            "age": 18,
+            "myFocus": [
+                3
+            ],
+            "myIgnore": [
+                2
+            ],
+            "focusMe": [],
+            "Isadministrator": true,
+            "interest": [
+                "看书",
+                "拍照"
+            ],
+            "touxiang": "/user/color.png"
+        },
+        {
+            "userName": "xiaobai",
+            "passWord": "123",
+            "gender": 0,
+            "id": 2,
+            "age": 0,
+            "myFocus": [
+                1
+            ],
+            "myIgnore": [],
+            "focusMe": [],
+            "interest": [],
+            "Isadministrator": true,
+            "touxiang": "/img/toux.png"
+        },
+        {
+            "userName": "admin2",
+            "passWord": "123456",
+            "touxiang": "/user/photo.png",
+            "gender": 0,
+            "id": 3,
+            "age": 0,
+            "myFocus": [
+                1
+            ],
+            "focusMe": [],
+            "myIgnore": [
+                2
+            ],
+            "Isadministrator": false,
+            "interest": []
+        }
+    ]
+}

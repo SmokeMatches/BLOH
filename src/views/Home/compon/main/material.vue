@@ -105,7 +105,6 @@
 
 <script>
 import { getimage, AddcollectImg, DelImg } from "api/image";
-import axios from "axios";
 export default {
   name: "Material",
   data() {
@@ -206,32 +205,39 @@ export default {
       });
     },
     delImage(q1) {
-      // 获取当前用户身份信息
       this.loading = true;
       const identify = window.sessionStorage.getItem("identify");
-      DelImg({
-        Sel: this.radio,
-        identify,
-        id: q1,
-      }).then((res) => {
-        this.$alert(res.data.message, "友情提示", {
-          confirmButtonText: "确定",
-          callback: (action) => {
-            this.$message({
-              type: "info",
-              action: `action:${action}`,
-            });
-          },
+      // 获取当前用户身份信息
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          DelImg({
+            Sel: this.radio,
+            identify,
+            id: q1,
+          }).then((res) => {
+            this.loading = false;
+            setTimeout(() => {
+              this.getimg();
+            }, 1000);
+          });
+        })
+        .catch(() => {
+          this.loading = false;
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
         });
-        this.loading = false;
-        this.getimg();
-      });
     },
   },
 };
 </script>
 
-<style  lang='less'>
+<style scoped  lang='less'>
 .el-radio-group {
   margin-bottom: 0.2rem;
 }

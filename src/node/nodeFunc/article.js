@@ -1,6 +1,7 @@
 const fs = require('fs')
 const uuid = require('node-uuid')
 const dbPath = './publicStatic/article.json'
+const UsrPath = './publicStatic/user.json'
     // 获取所有文章
 exports.getArticle = (callback) => {
         fs.readFile(dbPath, 'utf8', (err, data) => {
@@ -207,15 +208,15 @@ exports.addArticle = (qy, body, callback) => {
         articleList.article.articleId = thisId
         articleList.article.date = now
         articleList.article.user = userName
-        articleList.article.TotalComNum = 0
+        articleList.article.comment = []
         articleList.article.IsCom = false
-        articleList.article.FansComNum = 0
+        articleList.article.fanscomment = []
 
         // 判断是存为草稿还是发布
         if (qy.draft == 'true') {
             articleList.article.status = 0
         } else {
-            articleList.article.status = 2
+            articleList.article.status = 1
         }
         // 调用获取所有文章的函数
         this.getArticle((data, err) => {
@@ -253,6 +254,126 @@ exports.addArticle = (qy, body, callback) => {
 
 
 
+    }
+    // 获取评论
+exports.GETCom = (config, callback) => {
+        const size = 10
+        var list = {}
+        this.getArticle((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var Data = JSON.parse(data).article
+                const article = Data.find(item => {
+                    return config.articleId == item.articleId
+                })
+                if (article == -1) {
+                    callback(err)
+                } else {
+                    var len = article.comment.length
+                    list.total = len
+                    if (len >= config.page * size) {
+                        list.comment = article.comment.slice((config.page - 1) * size, config.page * size)
+                        callback(list)
+                    } else if (config.page * size > len && (config.page - 1) * size < len) {
+                        list.comment = article.comment.slice((config.page - 1) * size)
+                        callback(list)
+                    } else {
+                        list.comment = article.comment.slice(0, 9)
+                        callback(list)
+                    }
+                }
+            }
+        })
+    }
+    // 发布评论
+exports.PUBLIC = (config, callback) => {
+        this.getArticle((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var Data = JSON.parse(data).article
+                    // 定义存储所有文章的对象
+                var UUU = {}
+                    // 声明存储评论的对象
+                var comUser = {}
+                    // 获取当前文章信息
+                const index = Data.findIndex(item1 => {
+                    return config.articleId == item1.articleId
+                })
+                if (index == -1) {
+                    callback(err)
+                } else {
+                    // 读取评论用户信息，准备存储
+                    fs.readFile(UsrPath, 'utf8', (error, res) => {
+                        if (error) {
+                            callback(error)
+                        } else {
+                            const USE = JSON.parse(res).user
+                            let admin = USE.find(item => {
+                                return config.identify == item.id
+                            })
+                            if (admin == -1) {
+                                callback(error)
+                            } else {
+                                //生成时间
+                                var date = new Date()
+                                var Months = date.getMonth() + 1
+                                var Dates = date.getDate()
+                                var Hours = date.getHours()
+                                var Minutes = date.getMinutes()
+                                var Seconds = date.getSeconds()
+                                var now = date.getFullYear() + '-' + Months + '-' + Dates + ' ' + Hours + ':' + Minutes + ':' + Seconds;
+                                comUser.name = admin.userName,
+                                    comUser.touxiang = admin.touxiang
+                                comUser.time = now
+                                comUser.content = config.content
+                                    // 判断是否是粉丝
+                                const admin1 = USE.find(item2 => {
+                                    return Data[index].user == item2.userName
+                                })
+                                if (admin1 == -1) {
+                                    callback(error)
+                                } else {
+                                    const id = admin.myFocus.findIndex(itme3 => {
+                                        return admin1.id == itme3
+                                    })
+                                    if (id == -1) {
+                                        Data[index].comment.unshift(comUser)
+                                        UUU.article = Data
+                                        fs.writeFile(dbPath, JSON.stringify(UUU), err1 => {
+                                            if (err1) {
+                                                callback(err1)
+                                            } else {
+                                                callback({
+                                                    code: 1,
+                                                    message: '添加评论成功'
+                                                })
+                                            }
+                                        })
+                                    } else {
+                                        Data[index].fanscomment.unshift(comUser)
+                                        Data[index].comment.unshift(comUser)
+                                        UUU.article = Data
+                                        fs.writeFile(dbPath, JSON.stringify(UUU), err1 => {
+                                            if (err1) {
+                                                callback(err1)
+                                            } else {
+                                                callback({
+                                                    code: 1,
+                                                    message: '添加评论成功'
+                                                })
+                                            }
+                                        })
+                                    }
+                                }
+                            }
+                        }
+                    })
+                }
+
+            }
+        })
     }
     // 获取指定文章,便于修改
 exports.getArticleId = (id, callback) => {

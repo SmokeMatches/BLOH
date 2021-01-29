@@ -222,6 +222,18 @@ router.patch('/updateArticle/:id', (req, res) => {
             res.send(data)
         })
     })
+    // 获取评论
+router.get('/getcomment', (req, res) => {
+        article.GETCom(req.query, data => {
+            res.send(data)
+        })
+    })
+    // 发表评论
+router.put('/publishcomment', (req, res) => {
+        article.PUBLIC(req.body, data => {
+            res.send(data)
+        })
+    })
     // 获取图片素材
 router.get('/getimage', (req, res) => {
         image.getimage(req.query, (data, err) => {

@@ -43,7 +43,7 @@ export const updateArticle = (id, data) => {
     })
 }
 
-// 获取评论
+// 获取评论页
 export const getComment = (Page = 1) => {
     return req2({
         url: "/commentarticle",
@@ -59,5 +59,22 @@ export const UpPersimision = (data) => {
         url: "/updatearticlequanxian",
         method: 'patch',
         data
+    })
+}
+
+// 获取当前文章的评论
+export const getComm = (config) => {
+    return req2({
+        url: '/getcomment',
+        params: config
+    })
+}
+
+// 添加评论
+export const PublishComm = (config) => {
+    return req2({
+        url: '/publishcomment',
+        method: 'put',
+        data: config
     })
 }

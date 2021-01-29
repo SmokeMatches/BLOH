@@ -53,7 +53,12 @@
       </div>
       <div>
         <!-- 数据表格 -->
-        <el-table :data="articleList" style="width: 100%" v-loading="loading">
+        <el-table
+          :data="articleList"
+          style="width: 100%"
+          v-loading="loading"
+          @row-click="toComment"
+        >
           <!-- prop渲染数据项 -->
           <el-table-column prop="cover" label="封面">
             <template slot-scope="scope">
@@ -83,14 +88,14 @@
                 icon="el-icon-edit"
                 type="primary"
                 circle
-                @click="editArticle(scope.row.articleId)"
+                @click.stop.prevent="editArticle(scope.row.articleId)"
               ></el-button>
               <el-button
                 size="mini"
                 type="danger"
                 icon="el-icon-delete"
                 circle
-                @click="deleteArticle(scope.row.articleId)"
+                @click.stop.prevent="deleteArticle(scope.row.articleId)"
               ></el-button>
             </template>
           </el-table-column>
@@ -252,11 +257,15 @@ export default {
         page,
         status: this.status,
         channel: this.channel,
-      }).then((res) => {
-        this.loading = false;
-        this.articleList = res.data.page ? res.data.page : null; //如果没有数据就置空
-        this.totalPage = res.data.len;
-      });
+      })
+        .then((res) => {
+          this.loading = false;
+          this.articleList = res.data.page ? res.data.page : null; //如果没有数据就置空
+          this.totalPage = res.data.len;
+        })
+        .catch((err) => {
+          this.loading = false;
+        });
     },
     editArticle(id) {
       this.centerDialogVisible = true;
@@ -304,6 +313,12 @@ export default {
       const src = `/cover/${file.raw.name}`;
       console.log(src);
       this.formLabelAlign.cover.push(src);
+    },
+    toComment(q) {
+      this.$router.push({
+        path: "/home/articledetail",
+        query: q,
+      });
     },
   },
 };

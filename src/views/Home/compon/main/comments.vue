@@ -12,9 +12,9 @@
       <div class="table">
         <el-table :data="TableForm.renderD" style="width: 100%">
           <el-table-column prop="title" label="标题"> </el-table-column>
-          <el-table-column prop="TotalComNum" label="总评论数">
+          <el-table-column prop="comment.length" label="总评论数">
           </el-table-column>
-          <el-table-column prop="FansComNum" label="粉丝评论数">
+          <el-table-column prop="fanscomment.length" label="粉丝评论数">
           </el-table-column>
           <el-table-column prop="IsCom" label="状态">
             <template slot-scope="scope">{{
@@ -67,6 +67,7 @@ export default {
     getArt(e) {
       getComment(e)
         .then((res) => {
+          this.Isdis = false;
           this.TableForm = res.data;
         })
         .catch((err) => {
@@ -83,7 +84,6 @@ export default {
           message: res.data.message,
           type: res.data.code ? "success" : "error",
         });
-        this.Isdis = false;
         setTimeout(() => {
           this.getArt(this.currenPage);
         }, 1000);
