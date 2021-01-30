@@ -96,8 +96,23 @@ export const addBlur = (config) => {
     }
     // 关注页面拉黑、拉黑页面取消拉黑
 export const OnlyIngnore = (config) => {
+        return req1({
+            url: "/onlyignore",
+            method: 'patch',
+            data: config
+        })
+    }
+    // 获取用户权限
+export const GetUs = config => {
+        return req1({
+            url: "/getuserAdmin",
+            params: config
+        })
+    }
+    // 设置用户是否为管理员
+export const changeAdm = config => {
     return req1({
-        url: "/onlyignore",
+        url: "/changeadmin",
         method: 'patch',
         data: config
     })

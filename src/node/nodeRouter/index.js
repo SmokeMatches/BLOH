@@ -7,6 +7,7 @@ const multer = require('multer')
 const user = require('../nodeFunc/user')
 const article = require('../nodeFunc/article')
 const image = require('../nodeFunc/image')
+const { config } = require('process')
 
 const app = express()
 
@@ -153,22 +154,48 @@ router.get('/article', (req, res) => {
                 console.log(2);
                 res.send('报错了')
             } else {
-                const dat = JSON.parse(data)
-                article.SetPage(req.query, dat, Page => {
-                    res.send(Page)
-                })
+                if (req.query.userName) {
+                    article.SetPageMine(req.query.userName, data0 => {
+                        article.SetPage(req.query, data0, Page => {
+                            res.send(Page)
+                        })
+                    })
+                } else {
+                    const dat = JSON.parse(data)
+                    article.SetPage(req.query, dat, Page => {
+                        res.send(Page)
+                    })
+                }
+
             }
         })
     })
+    // 状态页面获取文章
+router.get('/getarticlestatus', (req, res) => {
+        article.getarticleStatus(req.query, data => {
+            res.send(data)
+        })
+    })
+    // 审核通过和驳回草稿
+router.put('/changestatusSF', (req, res) => {
+        article.changeStatus(req.body, data => {
+            res.send(data)
+        })
+    })
+    // 审核驳回为失败
+router.put('/rejectCaogao', (req, res) => {
+        article.RejectCaoGao(req.body, data => {
+            res.send(data)
+        })
+    })
     //删除文章
-router.delete('/delArticle/:id', (req, res) => {
-        const id = req.params.id
+router.delete('/delArticle', (req, res) => {
         article.getArticle((data, err) => {
             if (err) {
                 res.status(5000).send('查询文章失败')
             } else {
                 const art = JSON.parse(data)
-                article.delArticle(id, art, data => {
+                article.delArticle(req.query, art, data => {
                     res.send(data)
                 })
             }
@@ -177,6 +204,12 @@ router.delete('/delArticle/:id', (req, res) => {
     // 添加文章
 router.post('/addArticle', (req, res) => {
         article.addArticle(req.query, req.body, (data) => {
+            res.send(data)
+        })
+    })
+    // 由草稿发布
+router.post('/publisharticle', (req, res) => {
+        article.CaoGaoToFaBu(req.query.id, data => {
             res.send(data)
         })
     })
@@ -310,7 +343,19 @@ router.get('/getcurrentuser', (req, res) => {
     })
     // 修改用户信息
 router.patch('/updateuserinfo', (req, res) => {
-    user.UpdateUserInfo(req.body, (data) => {
+        user.UpdateUserInfo(req.body, (data) => {
+            res.send(data)
+        })
+    })
+    // 获取用户权限信息
+router.get('/getuserAdmin', (req, res) => {
+        user.UserTotal(req.query, data => {
+            res.send(data)
+        })
+    })
+    // 设置用户是否为管理员
+router.patch('/changeadmin', (req, res) => {
+    user.changeAdmin(req.body, data => {
         res.send(data)
     })
 })

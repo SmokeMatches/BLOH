@@ -1,6 +1,6 @@
 <template>
   <div class="comment">
-    <el-card>
+    <el-card v-if="admin === 0 || admin === 1">
       <div slot="header" class="clearfix">
         <el-breadcrumb separator=">">
           <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -46,6 +46,23 @@
         </el-pagination>
       </div>
     </el-card>
+    <el-card class="box-card" v-else>
+      <div slot="header">
+        <div slot="header" class="clearfix">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/home' }"
+              >首页</el-breadcrumb-item
+            >
+            <el-breadcrumb-item
+              ><a href="/home/user">用户管理</a></el-breadcrumb-item
+            >
+          </el-breadcrumb>
+          <div class="NoAdmin">
+            <h1>暂无权限浏览</h1>
+          </div>
+        </div>
+      </div>
+    </el-card>
   </div>
 </template>
 
@@ -55,15 +72,23 @@ export default {
   name: "Comment",
   data() {
     return {
+      admin: null,
       TableForm: [],
       currenPage: 1,
       Isdis: false,
     };
   },
+  created() {
+    this.getAdmin();
+  },
   mounted() {
     this.getArt();
   },
   methods: {
+    getAdmin() {
+      const admin = window.sessionStorage.getItem("admin");
+      this.admin = parseInt(admin);
+    },
     getArt(e) {
       getComment(e)
         .then((res) => {

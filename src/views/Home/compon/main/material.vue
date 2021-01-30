@@ -96,7 +96,6 @@
       </el-upload>
 
       <span slot="footer" class="dialog-footer">
-        <!-- <el-button @click="PublishVisible = false">取 消</el-button> -->
         <el-button type="primary" @click="closeDig">确 定</el-button>
       </span>
     </el-dialog>
@@ -109,6 +108,7 @@ export default {
   name: "Material",
   data() {
     return {
+      admin: null,
       radio: 0,
       aaa: true,
       PublishVisible: false,
@@ -118,10 +118,17 @@ export default {
       currentPage: 1,
     };
   },
+  created() {
+    this.getAdmin();
+  },
   mounted() {
     this.getimg();
   },
   methods: {
+    getAdmin() {
+      const admin = window.sessionStorage.getItem("admin");
+      this.admin = parseInt(admin);
+    },
     getimg() {
       if (this.radio == 1) {
         const uuu = window.sessionStorage.getItem("identify");
@@ -167,7 +174,20 @@ export default {
       this.getimg();
     },
     publishImg() {
-      this.PublishVisible = true;
+      if (this.admin === 0 || this.admin === 1) {
+        this.PublishVisible = true;
+      } else {
+        this.loading = false;
+        this.$alert("你权限不够", "反馈", {
+          confirmButtonText: "确定",
+          callback: (action) => {
+            this.$message({
+              type: "info",
+              message: `action: ${action}`,
+            });
+          },
+        });
+      }
     },
     handleAvatarSuccess(res, file) {
       if (res.code == 0) {
@@ -206,24 +226,30 @@ export default {
     },
     delImage(q1) {
       this.loading = true;
-      const identify = window.sessionStorage.getItem("identify");
-      // 获取当前用户身份信息
       this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          DelImg({
-            Sel: this.radio,
-            identify,
-            id: q1,
-          }).then((res) => {
-            this.loading = false;
-            setTimeout(() => {
-              this.getimg();
-            }, 1000);
-          });
+          if (this.radio == "0") {
+            if (this.admin === 0 || this.admin === 1) {
+              this.deleteImage(q1);
+            } else {
+              this.loading = false;
+              this.$alert("你权限不够", "反馈", {
+                confirmButtonText: "确定",
+                callback: (action) => {
+                  this.$message({
+                    type: "info",
+                    message: `action: ${action}`,
+                  });
+                },
+              });
+            }
+          } else {
+            this.deleteImage(q1);
+          }
         })
         .catch(() => {
           this.loading = false;
@@ -232,6 +258,24 @@ export default {
             message: "已取消删除",
           });
         });
+    },
+    deleteImage(q1) {
+      const identify = window.sessionStorage.getItem("identify");
+      // 获取当前用户身份信息
+      DelImg({
+        Sel: this.radio,
+        identify,
+        id: q1,
+      }).then((res) => {
+        this.loading = false;
+        this.$message({
+          type: res.data.code ? "success" : "error",
+          message: res.data.message,
+        });
+        setTimeout(() => {
+          this.getimg();
+        }, 1000);
+      });
     },
   },
 };

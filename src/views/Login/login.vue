@@ -44,7 +44,6 @@
 
 <script>
 import { req1_yzm, req1_log } from "api/index.js";
-import { regLog } from "assets/js/index.js";
 export default {
   data() {
     return {
@@ -118,6 +117,7 @@ export default {
           if (res.data.logCode) {
             window.sessionStorage.setItem("user", this.form.userName);
             window.sessionStorage.setItem("identify", res.data.id);
+            window.sessionStorage.setItem("admin", res.data.admin);
             this.$router.push({
               path: "/home",
             });

@@ -38,6 +38,18 @@
       <i class="el-icon-user"></i>
       <span title="title">个人设置</span>
     </el-menu-item>
+    <el-menu-item index="/home/user">
+      <i class="el-icon-postcard"></i>
+      <span title="title">用户管理</span>
+    </el-menu-item>
+    <el-menu-item index="/home/articleguanli">
+      <i class="el-icon-postcard"></i>
+      <span title="title">文章状态</span>
+    </el-menu-item>
+    <el-menu-item index="/home/myarticle">
+      <i class="el-icon-thumb"></i>
+      <span title="title">我发布的</span>
+    </el-menu-item>
   </el-menu>
 </template>
 

@@ -20,7 +20,7 @@ const save = function(User, callback) {
                 sUser.myFocus = []
                 sUser.focusMe = []
                 sUser.myIgnore = []
-                sUser.Isadministrator = false
+                sUser.Isadministrator = 2
                 sUser.interest = []
                     //保存对象数据到数组中
                 users.push(sUser)
@@ -67,7 +67,8 @@ exports.login = (name, conYzm, alluser, callback) => {
                     callback({
                         logCode: 1,
                         message: '登录成功',
-                        id: userlist.identify[i]
+                        id: userlist.identify[i],
+                        admin: alluser[i].Isadministrator
                     });
                 } else {
                     callback({
@@ -214,7 +215,6 @@ exports.UpdateUserInfo = (config, callback) => {
     }
     // 上传用户头像
 exports.UploadAvator = (config, callback) => {
-        console.log(config);
         this.UserAll((data, err) => {
             if (err) {
                 callback(err)
@@ -567,7 +567,6 @@ exports.laHei = (config, callback) => {
     }
     // 只取关
 exports.OnlyBlur = (config, callback) => {
-        console.log(config);
         this.UserAll((data, err) => {
             if (err) {
                 callback(err)
@@ -626,57 +625,137 @@ exports.OnlyBlur = (config, callback) => {
     }
     // 只拉黑
 exports.OnlyWhait = (config, callback) => {
-    this.UserAll((data, err) => {
-        if (err) {
-            callback(err)
-        } else {
-            var USA = JSON.parse(data).user
-            const index = USA.findIndex(item => {
-                return config.identify == item.id
-            })
-            var DataUser = {}
-            if (index != -1) {
-                const myProfile = USA.slice(index, index + 1)
-                const IND = myProfile[0].myFocus.findIndex(item1 => {
-                    return config.identify1 == item1
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
+            } else {
+                var USA = JSON.parse(data).user
+                const index = USA.findIndex(item => {
+                    return config.identify == item.id
                 })
-                if (IND == -1) {
-                    const Ind = USA[index].myIgnore.findIndex(item0 => {
-                        return config.identify1 == item0
+                var DataUser = {}
+                if (index != -1) {
+                    const myProfile = USA.slice(index, index + 1)
+                    const IND = myProfile[0].myFocus.findIndex(item1 => {
+                        return config.identify1 == item1
                     })
-                    if (Ind != -1) {
-                        USA[index].myIgnore.splice(Ind, 1)
+                    if (IND == -1) {
+                        const Ind = USA[index].myIgnore.findIndex(item0 => {
+                            return config.identify1 == item0
+                        })
+                        if (Ind != -1) {
+                            USA[index].myIgnore.splice(Ind, 1)
+                            DataUser.user = USA
+                            fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
+                                if (error) {
+                                    callback(error)
+                                } else {
+                                    callback({
+                                        code: 1,
+                                        message: '取消拉黑该用户成功'
+                                    })
+                                }
+                            })
+                        }
+                    } else {
+                        USA[index].myFocus.splice(IND, 1)
+                        USA[index].myIgnore.push(parseInt(config.identify1))
                         DataUser.user = USA
-                        fs.writeFile(dbPath, JSON.stringify(DataUser), error => {
-                            if (error) {
-                                callback(error)
+                        fs.writeFile(dbPath, JSON.stringify(DataUser), err => {
+                            if (err) {
+                                callback(err)
                             } else {
                                 callback({
                                     code: 1,
-                                    message: '取消拉黑该用户成功'
+                                    message: '取消拉黑此用户成功'
                                 })
                             }
                         })
                     }
                 } else {
-                    USA[index].myFocus.splice(IND, 1)
-                    USA[index].myIgnore.push(parseInt(config.identify1))
-                    DataUser.user = USA
-                    fs.writeFile(dbPath, JSON.stringify(DataUser), err => {
-                        if (err) {
-                            callback(err)
-                        } else {
-                            callback({
-                                code: 1,
-                                message: '取消拉黑此用户成功'
-                            })
-                        }
+                    callback({
+                        code: 0,
+                        message: '取关失败'
                     })
                 }
+            }
+        })
+    }
+    // 获取用户是否是列表（所有）
+exports.UserTotal = (config, callback) => {
+        const size = 10
+        this.UserAll((data, err) => {
+            if (err) {
+                callback(err)
             } else {
-                callback({
-                    code: 0,
-                    message: '取关失败'
+                var Data = JSON.parse(data).user
+                var UserList = { user: [] }
+                if (config.Isadministrator) {
+                    for (let i in Data) {
+                        if (config.Isadministrator == Data[i].Isadministrator) {
+                            UserList.user.push(Data[i])
+                        }
+                    }
+                    var len = UserList.user.length
+                    UserList.total = len
+                    if (len >= config.page * size) {
+                        UserList.user = UserList.user.slice((config.page - 1) * size, config.page * size)
+                        callback(UserList)
+                    } else if (config.page * size > len && (config.page - 1) * size < len) {
+                        UserList.user = UserList.user.slice((config.page - 1) * size)
+                        callback(UserList)
+                    } else {
+                        UserList.user = UserList.user.slice(0, 9)
+                        callback(UserList)
+                    }
+                } else {
+                    const len = Data.length
+                    UserList.user = Data
+                    UserList.total = len
+                    if (len >= config.page * size) {
+                        UserList.user = UserList.user.slice((config.page - 1) * size, config.page * size)
+                        callback(UserList)
+                    } else if (config.page * size > len && (config.page - 1) * size < len) {
+                        UserList.user = UserList.user.slice((config.page - 1) * size)
+                        callback(UserList)
+                    } else {
+                        UserList.user = UserList.user.slice(0, 9)
+                        callback(UserList)
+                    }
+                }
+            }
+        })
+    }
+    // 设置用户是否为管理员
+exports.changeAdmin = (config, callback) => {
+    this.UserAll((data, err) => {
+        if (err) {
+            callback(err)
+        } else {
+            var UserList = {}
+            var Data = JSON.parse(data).user
+            const index = Data.findIndex(item0 => {
+                return config.identify == item0.id
+            })
+            if (index == -1) {
+                callback(err)
+            } else {
+                if (config.Isadmin == 1) {
+                    Data[index].Isadministrator = 2
+                    UserList.user = Data
+                } else {
+                    Data[index].Isadministrator = 1
+                    UserList.user = Data
+                }
+                fs.writeFile(dbPath, JSON.stringify(UserList), error => {
+                    if (error) {
+                        callback(error)
+                    } else {
+                        callback({
+                            code: 1,
+                            message: '设置用户等级成功'
+                        })
+                    }
                 })
             }
         }

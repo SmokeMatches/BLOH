@@ -5,8 +5,8 @@
         <el-breadcrumb separator="/" class="header">
           <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
           <el-breadcrumb-item>文章详情</el-breadcrumb-item>
-          <el-link @click="goback" class="back">返回</el-link>
         </el-breadcrumb>
+        <el-link @click="goback" class="back">返回</el-link>
       </div>
       <div class="text item">
         <el-form label-width="80px" :model="ArticleInfo">

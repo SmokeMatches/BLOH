@@ -25,6 +25,10 @@ const User = () =>
     import ('views/Home/compon/main/User')
 const ArticleDetail = () =>
     import ('views/Home/compon/main/articleDetail')
+const myArticle = () =>
+    import ('views/Home/compon/main/myarticle')
+const articleGuan = () =>
+    import ('views/Home/compon/main/articleGuanli')
 const routes = [{
         path: '/',
         redirect: '/login'
@@ -94,6 +98,14 @@ const routes = [{
                 path: 'articledetail',
                 name: 'articledetail',
                 component: ArticleDetail
+            }, {
+                path: 'myarticle',
+                name: 'myArticle',
+                component: myArticle
+            }, {
+                path: 'articleguanli',
+                name: 'articleguanli',
+                component: articleGuan
             }
         ]
     }

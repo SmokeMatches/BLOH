@@ -7,34 +7,62 @@ export const getArticle = (page) => {
         })
     }
     // 删除文章
-export const delArticle = (id) => {
+export const delArticle = (config) => {
     return req2({
-        url: `/delArticle/${id}`,
-        method: 'delete'
+        url: `/delArticle`,
+        method: 'delete',
+        params: config
     })
 }
 
 // 添加文章
-
 export const addArticle = (data, draft) => {
-    return req2({
-        url: '/addArticle',
-        method: 'post',
-        params: {
-            draft
-        },
-        data
-    })
-}
-
-// 获取需要修改的文章
+        return req2({
+            url: '/addArticle',
+            method: 'post',
+            params: {
+                draft
+            },
+            data
+        })
+    }
+    // 由草稿发布文章
+export const PublishArt = (config) => {
+        return req2({
+            url: '/publisharticle',
+            method: 'post',
+            params: config
+        })
+    }
+    // 获取需要修改的文章
 export const getArticleId = (id) => {
+        return req2({
+            url: `/getarticleId/${id}`,
+        })
+    }
+    // 获取状态管理页文章
+export const GEtArtStatus = (config) => {
+        return req2({
+            url: '/getarticlestatus',
+            params: config
+        })
+    }
+    // 审核通过和驳回草稿
+export const ChangeSF = (config) => {
     return req2({
-        url: `/getarticleId/${id}`,
+        url: '/changestatusSF',
+        method: 'put',
+        data: config
     })
 }
-
-// 编辑文章
+export const RejectCaogao = (config) => {
+        return req2({
+            url: '/rejectCaogao',
+            method: 'put',
+            data: config
+        })
+    }
+    // 编辑文章
 export const updateArticle = (id, data) => {
     return req2({
         url: `/updateArticle/${id}`,

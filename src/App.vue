@@ -21,4 +21,11 @@ export default {
 };
 </script>
 <style lang="less">
+.NoAdmin {
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #909399;
+}
 </style>

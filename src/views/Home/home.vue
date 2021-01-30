@@ -42,9 +42,8 @@
 </template>
 
 <script>
-import { req1_all, req1_avator } from "api/index.js";
+import { req1_avator } from "api/index.js";
 import Asside from "@/views/Home/compon/Asside";
-import axios from "axios";
 export default {
   data() {
     return {

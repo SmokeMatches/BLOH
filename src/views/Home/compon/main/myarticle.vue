@@ -18,7 +18,6 @@
               <el-radio label="1">待审核</el-radio>
               <el-radio label="2">审核失败</el-radio>
               <el-radio label="3">审核通过</el-radio>
-              <el-radio label="4">已删除</el-radio>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="频道">
@@ -81,14 +80,13 @@
             </template>
           </el-table-column>
           <el-table-column label="操作">
-            <template slot-scope="scope" v-if="scope.row.status != 4">
+            <template slot-scope="scope">
               <!-- 绑定为了获取删除和修改所需id -->
               <el-button
                 size="mini"
                 icon="el-icon-edit"
                 type="primary"
                 circle
-                :disabled="admin === 2"
                 @click.stop.prevent="editArticle(scope.row.articleId)"
               ></el-button>
               <el-button
@@ -96,9 +94,16 @@
                 type="danger"
                 icon="el-icon-delete"
                 circle
-                :disabled="admin === 2"
                 @click.stop.prevent="deleteArticle(scope.row.articleId)"
               ></el-button>
+              <el-button
+                size="mini"
+                type="warning"
+                circle
+                v-show="scope.row.status === 0"
+                @click.stop.prevent="Publish(scope.row.articleId)"
+                >发布</el-button
+              >
             </template>
           </el-table-column>
         </el-table>
@@ -181,6 +186,7 @@ import {
   delArticle,
   getArticleId,
   updateArticle,
+  PublishArt,
 } from "api/article";
 import {
   ElementTiptap,
@@ -205,7 +211,6 @@ export default {
   },
   data() {
     return {
-      admin: null,
       dialogImageUrl: "",
       dialogVisible: false,
       form: {
@@ -249,23 +254,19 @@ export default {
       ],
     };
   },
-  created() {
-    this.getAdmin();
-  },
+  created() {},
   mounted() {
     this.getatricle();
   },
   methods: {
-    getAdmin() {
-      const admin = window.sessionStorage.getItem("admin");
-      this.admin = parseInt(admin);
-    },
     getatricle(page) {
+      const userName = window.sessionStorage.getItem("user");
       this.loading = true;
       getArticle({
         page,
         status: this.status,
         channel: this.channel,
+        userName,
       })
         .then((res) => {
           this.loading = false;
@@ -283,13 +284,14 @@ export default {
       });
     },
     deleteArticle(id) {
+      const userName = window.sessionStorage.getItem("user");
       this.$confirm("此操作将永久删除该文件, 是否继续?", "删除提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          delArticle({ id }).then((res) => {
+          delArticle({ id, userName }).then((res) => {
             alert(res.data.message);
             this.getatricle(this.CurrentPage);
           });
@@ -324,12 +326,25 @@ export default {
       this.formLabelAlign.cover.push(src);
     },
     toComment(q) {
-      if (q.status != 4) {
-        this.$router.push({
-          path: "/home/articledetail",
-          query: q,
+      this.$router.push({
+        path: "/home/articledetail",
+        query: q,
+      });
+    },
+    Publish(id) {
+      PublishArt({ id })
+        .then((res) => {
+          this.$message({
+            type: res.data.code ? "success" : "error",
+            message: res.data.message,
+          });
+          setTimeout(() => {
+            this.getatricle();
+          }, 1000);
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      }
     },
   },
 };
