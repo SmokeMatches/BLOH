@@ -14,7 +14,7 @@
             style="margin-right: 0.05rem"
             @click="isCollapse = !isCollapse"
           ></i>
-          <span>石门农村信用社</span>
+          <span>阿拉善个人博客</span>
         </div>
         <div class="right_tou">
           <img :src="avator" alt="头像" class="avator" />

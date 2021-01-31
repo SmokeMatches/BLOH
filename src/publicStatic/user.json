@@ -1,1 +1,69 @@
-{"user":[{"userName":"admin","passWord":"123","gender":0,"id":1,"age":18,"myFocus":[3],"myIgnore":[],"focusMe":[],"Isadministrator":0,"interest":["看书","拍照","编程"],"touxiang":"/user/color.png"},{"userName":"xiaobai","passWord":"123","gender":0,"id":2,"age":0,"myFocus":[1],"myIgnore":[],"focusMe":[],"interest":[],"Isadministrator":1,"touxiang":"/img/toux.png"},{"userName":"admin2","passWord":"123456","touxiang":"/user/photo.png","gender":0,"id":3,"age":0,"myFocus":[1],"focusMe":[],"myIgnore":[2],"Isadministrator":2,"interest":[]}]}
+{
+    "user": [{
+            "userName": "admin",
+            "passWord": "123",
+            "gender": 0,
+            "id": 1,
+            "age": 18,
+            "myFocus": [
+                3
+            ],
+            "myIgnore": [],
+            "focusMe": [],
+            "Isadministrator": 0,
+            "interest": [
+                "看书",
+                "拍照",
+                "编程"
+            ],
+            "touxiang": "/user/color.png"
+        },
+        {
+            "userName": "xiaobai",
+            "passWord": "123",
+            "gender": 0,
+            "id": 2,
+            "age": 0,
+            "myFocus": [
+                1
+            ],
+            "myIgnore": [],
+            "focusMe": [],
+            "interest": [],
+            "Isadministrator": 1,
+            "touxiang": "/img/toux.png"
+        },
+        {
+            "userName": "admin2",
+            "passWord": "123456",
+            "touxiang": "/user/photo.png",
+            "gender": 0,
+            "id": 3,
+            "age": 0,
+            "myFocus": [
+                1
+            ],
+            "focusMe": [],
+            "myIgnore": [
+                2
+            ],
+            "Isadministrator": 2,
+            "interest": []
+        },
+        {
+            "userName": "admin3",
+            "passWord": "123",
+            "touxiang": "/img/user.png",
+            "gender": 0,
+            "id": 4,
+            "age": 0,
+            "myFocus": [
+                1
+            ],
+            "focusMe": [],
+            "myIgnore": [],
+            "Isadministrator": 2,
+            "interest": []
+        }
+    ]
+}

@@ -3,6 +3,7 @@
     class="el-menu-vertical-demo"
     background-color="#002033"
     text-color="#fff"
+    default-active="1"
     router
     :collapse="isCollapse"
     active-text-color="#ffd04b"
@@ -10,13 +11,9 @@
     <div :class="isCollapse ? 'image1' : 'imgHezi'">
       <img src="~assets/img/tree.png" class="image" alt="" />
     </div>
-    <el-menu-item index="/home">
-      <i class="el-icon-s-home"></i>
-      <span title="title">首页</span>
-    </el-menu-item>
     <el-menu-item index="/home/content">
       <i class="el-icon-document"></i>
-      <span title="title">内容管理</span>
+      <span title="title">首页</span>
     </el-menu-item>
     <el-menu-item index="/home/materical">
       <i class="el-icon-picture-outline"></i>

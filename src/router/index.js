@@ -7,8 +7,6 @@ const Home = () =>
     import ('views/Home/home')
 const Register = () =>
     import ('views/Login/register')
-const Main = () =>
-    import ('views/Home/compon/main/main')
 const Content = () =>
     import ('views/Home/compon/main/content')
 const Material = () =>
@@ -57,8 +55,8 @@ const routes = [{
         },
         children: [{
                 path: '',
-                name: 'main',
-                component: Main
+                name: 'content',
+                component: Content
             },
             {
                 path: 'content',
